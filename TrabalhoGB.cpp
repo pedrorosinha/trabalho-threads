@@ -15,10 +15,6 @@ const char *nomeArquivos[] = {"buffer.log",
 #define nTipoLogs 6
 #define nArquivos 10
 
-// Funções e structs auxiliares
-void moveLogs(const char *origem, const char *destino, const char *palavra);
-void geraLogs(const char *name);
-
 typedef struct
 {
     int id;
@@ -33,18 +29,7 @@ typedef struct
     bool acessando[nArquivos]; // true se acessando
 } ThreadData;
 
-void LogThread(ThreadData *t);
 
-// Funções das threads
-void *ThreadBuffer(void *arg);
-void *ThreadInterface(void *arg);
-void *ThreadOperacao(void *arg);
-void *ThreadLocalizacao(void *arg);
-void *ThreadPropaganda(void *arg);
-void *ThreadCalculo(void *arg);
-void *ThreadOmega(void *arg);
-void *ThreadKlebsMax(void *arg);
-void *ThreadChirpTome(void *arg);
 
 // Dados globais
 ArquivoData arquivos[nArquivos];
@@ -57,6 +42,23 @@ ThreadData threadCalculo;
 ThreadData threadOmega;
 ThreadData threadKlebsMax;
 ThreadData threadChirpTome;
+ThreadData t;
+
+// Funções das threads
+void *ThreadBuffer(void *arg);
+void *ThreadInterface(void *arg);
+void *ThreadOperacao(void *arg);
+void *ThreadLocalizacao(void *arg);
+void *ThreadPropaganda(void *arg);
+void *ThreadCalculo(void *arg);
+void *ThreadOmega(void *arg);
+void *ThreadKlebsMax(void *arg);
+void *ThreadChirpTome(void *arg);
+
+// Funções e structs auxiliares
+void moveLogs(const char *origem, const char *destino, const char *palavra, ThreadData *t) ;
+void geraLogs(const char *name);
+void LogThread(ThreadData *t);
 
 int main()
 {
@@ -74,15 +76,16 @@ int main()
     for (int i = 0; i < nArquivos; i++)
         threadBuffer.acessando[i] = false;
     threadBuffer.stop = false;
-    // pthread_create(&threadBuffer.thread, NULL, ThreadBuffer, &threadBuffer); // arquivo 0 = buffer
-    // pthread_create(&threadInterface.thread, NULL, ThreadInterface, &threadInterface); // arquivo 1 = interface
-    // pthread_create(&threadOperacao.thread, NULL, ThreadOperacao, &threadOperacao); // arquivo 3 = operacao
-    // pthread_create(&threadLocalizacao.thread, NULL, ThreadLocalizacao, &threadLocalizacao); // arquivo 4 = localizacao
-    pthread_create(&threadPropaganda.thread, NULL, ThreadPropaganda, &threadPropaganda); // arquivo 5 = propaganda
-    pthread_create(&threadCalculo.thread, NULL, ThreadCalculo, &threadCalculo); // arquivo 6 = calculo
-    pthread_create(&threadOmega.thread, NULL, ThreadOmega, &threadOmega); // arquivo 7 = omega
-    // pthread_create(&threadKlebsMax.thread, NULL, ThreadKlebsMax, &threadKlebsMax); // arquivo 8 = klebs
-    // pthread_create(&threadChirpTome.thread, NULL, ThreadChirpTome, &threadChirpTome); // arquivo 9 = chirp
+
+    //pthread_create(&threadBuffer.thread, NULL, ThreadBuffer, &threadBuffer); // arquivo 0 = buffer
+    //pthread_create(&threadInterface.thread, NULL, ThreadInterface, &threadInterface); // arquivo 1 = interface
+    //pthread_create(&threadOperacao.thread, NULL, ThreadOperacao, &threadOperacao); // arquivo 3 = operacao
+    //pthread_create(&threadLocalizacao.thread, NULL, ThreadLocalizacao, &threadLocalizacao); // arquivo 4 = localizacao
+    //pthread_create(&threadPropaganda.thread, NULL, ThreadPropaganda, &threadPropaganda); // arquivo 5 = propaganda
+    //pthread_create(&threadCalculo.thread, NULL, ThreadCalculo, &threadCalculo); // arquivo 6 = calculo
+    //pthread_create(&threadOmega.thread, NULL, ThreadOmega, &threadOmega); // arquivo 7 = omega
+    //pthread_create(&threadKlebsMax.thread, NULL, ThreadKlebsMax, &threadKlebsMax); // arquivo 8 = klebs
+    pthread_create(&threadChirpTome.thread, NULL, ThreadChirpTome, &threadChirpTome); // arquivo 9 = chirp
 
     // Deixa rodar por 3 segundos
     sleep(3);
@@ -130,14 +133,8 @@ void *ThreadInterface(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadInterface.acessando[1] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
-
-        threadInterface.acessando[1] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("buffer.log", "Interface.log", "Interface", myself);
 
         sleep(1);
     }
@@ -153,14 +150,8 @@ void *ThreadOperacao(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadOperacao.acessando[3] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
-
-        threadOperacao.acessando[3] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("buffer.log", "Operacao.log", "Operacao", myself);
 
         sleep(1);
     }
@@ -176,14 +167,8 @@ void *ThreadLocalizacao(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadLocalizacao.acessando[4] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
-
-        threadLocalizacao.acessando[4] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("buffer.log", "Localizacao.log", "Localizacao", myself);
 
         sleep(1);
     }
@@ -199,14 +184,8 @@ void *ThreadPropaganda(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadPropaganda.acessando[5] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
-
-        threadPropaganda.acessando[5] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("buffer.log", "Propaganda.log", "Propaganda", myself);
 
         sleep(1);
     }
@@ -222,14 +201,8 @@ void *ThreadCalculo(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadCalculo.acessando[6] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
-
-        threadCalculo.acessando[6] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("buffer.log", "Calculo.log", "Calculo", myself);
 
         sleep(1);
     }
@@ -245,14 +218,12 @@ void *ThreadOmega(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadOmega.acessando[7] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
+        moveLogs("Operacao.log", "Omega.log", "Operacao", myself);
 
-        threadOmega.acessando[7] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("Propaganda.log", "Omega.log", "Propaganda", myself);
+
+        moveLogs("Calculo.log", "Omega.log", "Calculo", myself);
 
         sleep(1);
     }
@@ -268,14 +239,12 @@ void *ThreadKlebsMax(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadKlebsMax.acessando[7] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
+        moveLogs("Propaganda.log", "KleubsMax.log", "Propaganda", myself);
 
-        threadKlebsMax.acessando[7] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("Interface.log", "KleubsMax.log", "Interface", myself);
+
+        moveLogs("Localizacao.log", "KleubsMax.log", "Localizacao", myself);
 
         sleep(1);
     }
@@ -291,14 +260,13 @@ void *ThreadChirpTome(void *arg)
 
     while (!myself->stop)
     {
-        pthread_mutex_lock(&d->mutex);
-        threadChirpTome.acessando[8] = true;
 
-        LogThread(myself);
-        geraLogs(nomeArquivos[d->id]);
+        moveLogs("Calculo.log", "ChirpTome.log", "Calculo", myself);
 
-        threadChirpTome.acessando[8] = false;
-        pthread_mutex_unlock(&d->mutex);
+        moveLogs("Localizacao.log", "ChirpTome.log", "Localizacao", myself);
+
+        moveLogs("buffer.log", "ChirpTome.log", "Input", myself);
+
 
         sleep(1);
     }
@@ -319,8 +287,22 @@ void geraLogs(const char *name)
 
     fclose(f);
 }
-void moveLogs(const char *origem, const char *destino, const char *palavra)
+void moveLogs(const char *origem, const char *destino, const char *palavra, ThreadData *t)
 {
+    int idOrigem, idDestino;
+
+    for (int i = 0; i < nArquivos; i++)
+    {
+        if (strcmp(origem, nomeArquivos[i]) == 0) idOrigem = i;
+        if (strcmp(destino, nomeArquivos[i]) == 0) idDestino = i;
+    }
+
+    t->acessando[idOrigem] = true;
+    pthread_mutex_lock(&arquivos[idOrigem].mutex);
+
+    t->acessando[idDestino] = true;
+    pthread_mutex_lock(&arquivos[idDestino].mutex);
+
     char tempName[100];
     strcat(tempName, origem);
     strcat(tempName, "_temp.log");
@@ -338,12 +320,20 @@ void moveLogs(const char *origem, const char *destino, const char *palavra)
             fputs(linha, ftemp);
     }
 
+    LogThread(t);
+
     fclose(fin);
     fclose(fout);
     fclose(ftemp);
 
     remove(origem);
     rename(tempName, origem);
+
+    t->acessando[idDestino] = false;
+    pthread_mutex_unlock(&arquivos[idDestino].mutex);
+
+    t->acessando[idOrigem] = false;
+    pthread_mutex_unlock(&arquivos[idOrigem].mutex);
 }
 void LogThread(ThreadData *t)
 {
