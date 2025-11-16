@@ -334,7 +334,7 @@ void moveLogs(const char *origem, const char *destino, const char *palavra, Thre
     t->acessando[idDestino] = true;
     int lockdest = pthread_mutex_timedlock(&arquivos[idDestino].mutex, &ts);
     
-    if (lockorig == ETIMEDOUT) {
+    if (lockdest == ETIMEDOUT) {
         printf("DeadLock localizado no %s\n", destino);
         printf("Liberando a thread\n");
         
