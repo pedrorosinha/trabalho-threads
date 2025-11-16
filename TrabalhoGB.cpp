@@ -77,23 +77,40 @@ int main()
         threadBuffer.acessando[i] = false;
     threadBuffer.stop = false;
 
-    //pthread_create(&threadBuffer.thread, NULL, ThreadBuffer, &threadBuffer); // arquivo 0 = buffer
-    //pthread_create(&threadInterface.thread, NULL, ThreadInterface, &threadInterface); // arquivo 1 = interface
-    //pthread_create(&threadOperacao.thread, NULL, ThreadOperacao, &threadOperacao); // arquivo 3 = operacao
-    //pthread_create(&threadLocalizacao.thread, NULL, ThreadLocalizacao, &threadLocalizacao); // arquivo 4 = localizacao
-    //pthread_create(&threadPropaganda.thread, NULL, ThreadPropaganda, &threadPropaganda); // arquivo 5 = propaganda
-    //pthread_create(&threadCalculo.thread, NULL, ThreadCalculo, &threadCalculo); // arquivo 6 = calculo
-    //pthread_create(&threadOmega.thread, NULL, ThreadOmega, &threadOmega); // arquivo 7 = omega
-    //pthread_create(&threadKlebsMax.thread, NULL, ThreadKlebsMax, &threadKlebsMax); // arquivo 8 = klebs
+    pthread_create(&threadBuffer.thread, NULL, ThreadBuffer, &threadBuffer); // arquivo 0 = buffer
+    pthread_create(&threadInterface.thread, NULL, ThreadInterface, &threadInterface); // arquivo 1 = interface
+    pthread_create(&threadOperacao.thread, NULL, ThreadOperacao, &threadOperacao); // arquivo 3 = operacao
+    pthread_create(&threadLocalizacao.thread, NULL, ThreadLocalizacao, &threadLocalizacao); // arquivo 4 = localizacao
+    pthread_create(&threadPropaganda.thread, NULL, ThreadPropaganda, &threadPropaganda); // arquivo 5 = propaganda
+    pthread_create(&threadCalculo.thread, NULL, ThreadCalculo, &threadCalculo); // arquivo 6 = calculo
+    pthread_create(&threadOmega.thread, NULL, ThreadOmega, &threadOmega); // arquivo 7 = omega
+    pthread_create(&threadKlebsMax.thread, NULL, ThreadKlebsMax, &threadKlebsMax); // arquivo 8 = klebs
     pthread_create(&threadChirpTome.thread, NULL, ThreadChirpTome, &threadChirpTome); // arquivo 9 = chirp
 
     // Deixa rodar por 3 segundos
-    sleep(3);
+    sleep(20);
 
     printf("Parando threads.\n");
 
     threadBuffer.stop = true;
+    threadInterface.stop = true;
+    threadOperacao.stop = true;
+    threadLocalizacao.stop = true;
+    threadPropaganda.stop = true;
+    threadCalculo.stop = true;
+    threadOmega.stop = true;
+    threadKlebsMax.stop = true;
+    threadChirpTome.stop = true;
+
     pthread_join(threadBuffer.thread, NULL);
+    pthread_join(threadInterface.thread, NULL);
+    pthread_join(threadOperacao.thread, NULL);
+    pthread_join(threadLocalizacao.thread, NULL);
+    pthread_join(threadPropaganda.thread, NULL);
+    pthread_join(threadCalculo.thread, NULL);
+    pthread_join(threadOmega.thread, NULL);
+    pthread_join(threadKlebsMax.thread, NULL);
+    pthread_join(threadChirpTome.thread, NULL);
 
     printf("Finalizando.\n");
 
